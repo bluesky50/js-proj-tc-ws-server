@@ -1,0 +1,16 @@
+{
+  "name": "tc-server",
+  "version": "1.0.0",
+  "main": "app.js",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "moment": "^2.21.0",
+    "socket.io": "^2.0.4"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "start-db": ""
+  }
+}
