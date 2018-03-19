@@ -1,12 +1,20 @@
+const MAX_USERS = 16;
+
 class Users {
     constructor() {
         this.users = [];
     }
 
     addUser(id, username, room) {
-        const user = { id, username, room };
-        this.users.push(user);
-        return user;
+        const roomUsers = this.users.filter((u) => {
+            return u.room === room;
+        });
+
+        if (roomUsers.length < MAX_USERS) {
+            const user = { id, username, room };
+            this.users.push(user);
+            return user;
+        }
     }
 
     removeUser(id) {

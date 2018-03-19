@@ -1,5 +1,7 @@
 const { generateTopic, addVoterToTopic } = require('./topics.js');
 
+const MAX_TOPICS = 30;
+
 class Topics {
     constructor() {
         this.topics = {};
@@ -27,7 +29,7 @@ class Topics {
     }
 
     _checkTopicPlace(idx, room) {
-        console.log(this.topics[room]);
+        // console.log(this.topics[room]);
         if (this.topics[room].length > 1) {
             if (idx === 0) {
                 if (this.topics[room][idx].voters.length < this.topics[room][idx+1].voters.length) {
@@ -57,14 +59,20 @@ class Topics {
     }
 
     addTopic(topicString, username, room) {
-        console.log(topicString,room);
-        console.log(this.topics);
+        // console.log(topicString,room);
+        // console.log(this.topics);
         if (!this._containsTopic(topicString, room)) {
             if (this.topics[room] === undefined) {
                 const topicsArr = [{ topic: topicString, voters: [username] }] ;
                 this.topics[room] = topicsArr;
             } else {
-                this.topics[room].push({topic: topicString, voters:[username]});
+                if (this.topics[room].length < MAX_TOPICS) {
+                    this.topics[room].push({topic: topicString, voters:[username]});
+                } else {
+                    const topicsArr = this.topics.slice(Math.floor(MAX_TOPICS/2));
+                    topicsArr.push({topic: topicString, voters:[username]});
+                    this.topics[room] = topicsArr;
+                }
             }
         } else if (this._containsTopic(topicString, room)) {
             const t = this.getTopic(topicString, room);
