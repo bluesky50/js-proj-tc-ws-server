@@ -82,6 +82,14 @@ class Calls {
         }
     }
 
+    _getCallIndexById(id, room) {
+        for (const [index, call] of this.calls[room].entries()) {
+            if (call._id === id) {
+                return index;
+            }
+        }
+    }
+
     addCall(callInputObject, creatorUsername, room) {
         const newCall = generateCall(this.idCounter, callInputObject, creatorUsername);
         // console.log(newCall);
@@ -113,6 +121,11 @@ class Calls {
         }
     }
 
+    getCallById(id, room) {
+        const i = this._getCallIndexById(id, room);
+        return this.calls[room][i];
+    }
+
     removeCall(callTicker, creatorUsername, room) {
         const call = this.getCall(callTicker, creatorUsername, room);
         if (call) {
@@ -134,6 +147,17 @@ class Calls {
         const i = this._getCallIndex(callInputObject.ticker, creatorUsername, room);
         if (i) {
             this.calls[room][i] = { ...this.calls[room][i], ...callInputObject };
+        }
+    }
+
+    // This version could be generalized,
+    // it is currently tailored to be only for updating the status of a call.
+    updateCallById(updateObj, room) {
+        const i = this._getCallIndexById(updateObj._id, room);
+        console.log(i);
+        if (i !== undefined) {
+            // this.calls[room][i] = { ...this.calls[room][i], status: updateObj.status };
+            this.calls[room][i].status = updateObj.status;
         }
     }
 

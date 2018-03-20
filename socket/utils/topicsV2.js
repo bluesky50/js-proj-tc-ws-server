@@ -121,12 +121,19 @@ class Topics {
     }
 
     getSortedTopicsList(room) {
-        
+        if (this.topics[room] && this.topics[room].length > 9) {
+            return this.topics[room].sort((a,b) => {
+                return a.voters.length - b.voters.length;
+            }).slice(0,10);
+        }
+        return this.topics[room];
     }
 
     getUnsortedTopicsList(room) {
         if (this.topics[room] && this.topics[room].length > 9) {
-            return this.topics[room].slice(0,10);
+            return this.topics[room].sort((a,b) => {
+                return a.voters.length - b.voters.length;
+            }).slice(0,10);
         }
         return this.topics[room];
     }

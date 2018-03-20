@@ -30,6 +30,7 @@ const {
     
     NEW_CALL,
     CREATE_CALL,
+    UPDATE_CALL,
     UPDATE_CALL_LIST,
     // OPEN_CALL, ARCHIVE_CALL, PEND_CALL, CLOSE_CALL
 
@@ -81,19 +82,23 @@ io.on('connection', (socket) => {
         socket.emit(NEW_MESSAGE, generateMessage('Server', `You have joined ${userInfo.room} as ${userInfo.username}`));
         socket.broadcast.to(userInfo.room).emit(NEW_MESSAGE, generateMessage('Server', `${userInfo.username} has joined chat`));
         
-        io.to(userInfo.room).emit(UPDATE_TOPIC_LIST, topics.getUnsortedTopicsList(userInfo.room));
+        // on join emit an announcement
+        socket.emit(NEW_ANN, 'Community members can now add trade calls.');
+
+        // io.to(userInfo.room).emit(UPDATE_TOPIC_LIST, topics.getSortedTopicsList(userInfo.room));
+        socket.emit(UPDATE_TOPIC_LIST, topics.getSortedTopicsList(userInfo.room));
 
         // on join emit calls
-        io.to(userInfo.room).emit(UPDATE_CALL_LIST, calls.getCalls(userInfo.room));
+        // io.to(userInfo.room).emit(UPDATE_CALL_LIST, calls.getCalls(userInfo.room));
+        socket.emit(UPDATE_CALL_LIST, calls.getCalls(userInfo.room));
         
         // on join emit signaled users
-        io.to(userInfo.room).emit(UPDATE_SIGNALED_LIST, signaledUsers.getUsers(userInfo.room));
+        // io.to(userInfo.room).emit(UPDATE_SIGNALED_LIST, signaledUsers.getUsers(userInfo.room));
+        socket.emit(UPDATE_SIGNALED_LIST, signaledUsers.getUsers(userInfo.room));
         
         // on join emit pinned subject
-        io.to(userInfo.room).emit(UPDATE_SUBJECT, subjects.getSubject(userInfo.room));
-
-        // on join emit an announcement
-        io.to(userInfo.room).emit(NEW_ANN, 'Community members can now add trade calls.');
+        // io.to(userInfo.room).emit(UPDATE_SUBJECT, subjects.getSubject(userInfo.room));
+        socket.emit(UPDATE_SUBJECT, subjects.getSubject(userInfo.room));
 
         callback();
     });
@@ -146,6 +151,23 @@ io.on('connection', (socket) => {
         return callback("Problem with adding call");
     });
 
+    // Currently configured to only update based on the status.
+    // Can be modified later to update other fields of the  data.
+    socket.on(UPDATE_CALL, (updateObj) => {
+        const user = users.getUser(socket.id);
+        if(user) {
+
+            const c = calls.getCallById(updateObj._id, user.room);
+
+            if (c.creator === user.username) {
+                calls.updateCallById(updateObj, user.room);
+                io.to(user.room).emit(UPDATE_CALL, updateObj);
+                io.to(user.room).emit(NEW_ANN, `Call ${c.ticker}: ${updateObj.status} - ${user.username}.`);
+            }
+            
+        }
+    })
+
     socket.on(ADD_SIGNALED_USER, () => {
         const user = users.getUser(socket.id);
         if (user) {
@@ -178,8 +200,11 @@ io.on('connection', (socket) => {
         const user = users.removeUser(socket.id);
 
         if (user) {
+            signaledUsers.removeUser(user.username, user.room);
+            io.to(user.room).emit(REMOVE_SIGNALED_USER, user.username);
             io.to(user.room).emit(UPDATE_USER_LIST, users.getUserList(user.room));
-            io.to(user.channel).emit(NEW_MESSAGE, generateMessage('Server', `${user.username} has left`));
+            io.to(user.room).emit(NEW_MESSAGE, generateMessage('Server', `${user.username} has left`));
+            
         }
     });
 });
