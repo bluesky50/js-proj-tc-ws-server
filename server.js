@@ -67,7 +67,7 @@ let subjects = new Subjects();
 const rms = ["blockchain", "cs3", "home", "lambda"];
 
 io.on('connection', (socket) => {
-    console.log('New client connected', socket.id);
+    // console.log('New client connected', socket.id);
 
     socket.on(JOIN_CHANNEL, (userInfo, callback) => {
         if (!isValidString(userInfo.username) || !isValidString(userInfo.room || !rms.includes(userInfo.room))) {
@@ -196,7 +196,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        console.log('Client disconnected');
+        // console.log('Client disconnected');
         const user = users.removeUser(socket.id);
 
         if (user) {
@@ -204,7 +204,6 @@ io.on('connection', (socket) => {
             io.to(user.room).emit(REMOVE_SIGNALED_USER, user.username);
             io.to(user.room).emit(UPDATE_USER_LIST, users.getUserList(user.room));
             io.to(user.room).emit(NEW_MESSAGE, generateMessage('Server', `${user.username} has left`));
-            
         }
     });
 });

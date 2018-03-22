@@ -108,7 +108,7 @@ class Calls {
                 this.idCounter += 1;
             }
         } else {
-            console.log('Call ready exists.');
+            // console.log('Call ready exists.');
         }
         return newCall;
     }
@@ -154,7 +154,7 @@ class Calls {
     // it is currently tailored to be only for updating the status of a call.
     updateCallById(updateObj, room) {
         const i = this._getCallIndexById(updateObj._id, room);
-        console.log(i);
+        // console.log(i);
         if (i !== undefined) {
             // this.calls[room][i] = { ...this.calls[room][i], status: updateObj.status };
             this.calls[room][i].status = updateObj.status;
