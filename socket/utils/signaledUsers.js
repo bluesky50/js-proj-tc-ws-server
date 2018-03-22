@@ -6,7 +6,7 @@ class SignaledUsers {
     _containsUser(username, room) {
         if (this.signaledUsers.hasOwnProperty(room)) {
             for (let u of this.signaledUsers[room]) {
-                if (u.username === username) {
+                if (u === username) {
                     return true;
                 }
             }
