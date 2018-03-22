@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'test') {
         console.log(`Server started on port ${port}`);
     });
 } else {
-    server.listen(port, '10.10.10.4', () => {
+    server.listen(port, () => {
         console.log('Server starting in non-test configuation');
         console.log(`Server started on port ${port}`);
     });
